@@ -21,9 +21,6 @@ class Player(pygame.sprite.Sprite):
             self.speed = 10
         else:
             self.speed = 5
-
-        if pressed_keys[K_SPACE]:  # Cria um novo missil quando pressionada a barra espaço
-            bullets.add(bullet(self))
         
         if pressed_keys[K_w]:
             self.rect.move_ip(0, -self.speed)
