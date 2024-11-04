@@ -29,6 +29,14 @@ player = Player()
 #background = pygame.Surface(screen.get_size())
 #background.fill((0, 0, 0))
 
+#placar 
+score = 0 
+
+#formataçao para placar
+
+pygame.font.init()
+font = pygame.font.SysFont(None, 36)
+
 # Grupos de sprites
 missil = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
@@ -69,18 +77,26 @@ while running:
     for missile in missil:
         enemy_hit = pygame.sprite.spritecollideany(missile, enemies, collided=lambda m, e: m.hitbox.colliderect(e.rect))
         if enemy_hit:
+            score += 10
+
             missile.kill()  # Remove o míssil ao atingir um inimigo
             enemy_hit.kill()  # Remove o inimigo atingido
 
     # Verifica colisão do jogador com inimigos
     if pygame.sprite.spritecollideany(player, enemies , collided=lambda p, e: p.hitbox.colliderect(e.rect)):
         player.kill()
+    
+        
         
 
 
     # Renderiza todos os sprites
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)   
+        
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))  # Texto em branco
+    screen.blit(score_text, (10, 10))  # Placar no canto superior esquerdo
+
 
     pygame.display.flip()
     clock.tick(60)
