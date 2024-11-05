@@ -12,11 +12,18 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.image.load(image_path).convert_alpha()  # Carrega a imagem da nave
         self.surf = pygame.transform.scale(self.surf, (100, 100))  # Redimensiona a imagem da nave
         #self.rect = self.surf.get_rect(center=(400, 300))
-        self.rect = self.surf.get_rect(center=(400, 300))  # Inicializa no centro da tela
-        self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10,self.rect.width - 55, self.rect.height - 75) # Inicializa a hitbox da nave
+        self.rect = self.surf.get_rect(center=(100, 300))  # Inicializa no centro da tela
+        self.hitbox = pygame.Rect(self.rect.x + 25, self.rect.y + 27, self.rect.width - 50, self.rect.height - 75) # Inicializa a hitbox da nave
         #self.surf = pygame.transform.rotate(self.surf, -90)  # Rotaciona a imagem 90 graus à direita
+        #self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10)
         self.speed = 5
-
+        
+        
+    #def drawhitbox (self, surface):
+    #    self.hitbox.topleft = ( self.rect.x + 25, self.rect.y + 27 )
+    #    pygame.draw.rect(surface, (255, 0, 0), self.hitbox, 2)
+        
+        
     # Atualiza a posição do jogador conforme as teclas pressionadas
     def update(self, pressed_keys, bullets):
         if pressed_keys[K_LSHIFT]:  # Aumenta a velocidade ao pressionar Shift
@@ -34,7 +41,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(self.speed, 0)
 
         # Atualiza a hitbox da nave
-        self.hitbox.topleft = ( self.rect.x + 30, self.rect.y + 40 )
+        self.hitbox.topleft = ( self.rect.x + 20, self.rect.y + 40 )
         
         # Limites laterais (sem wrap-around)
         if self.rect.left < 0:  # Não permitir sair pela esquerda
@@ -47,5 +54,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = 0  # Coloca na parte superior
         elif self.rect.bottom < 0:  # Sai pela parte superior
             self.rect.top = 600  # Coloca na parte inferior
+        
+        #desenha a hitbox na tela
+
+
 
 
