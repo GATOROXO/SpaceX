@@ -1,22 +1,22 @@
-# Biblioteca PyGame
 import pygame
 from pygame.locals import *
 from bullets import bullet
 from asteroides import Enemy
 from jogador import Player
 import os
+
 # Inicializa pygame
 pygame.init()
 
-screen_width = 800 # Largura da tela ou eixo x
-screen_height = 600 # Altura da tela ou eixo y
-screen = pygame.display.set_mode((screen_width, screen_height)) # Cria a tela com o tamanho definido
-pygame.display.set_caption("SpaceX Alpha") # Define o nome da janela "SpaceX Alpha"
-background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'packground.png')).convert() #define a imagem de plano de fundo
-screen.blit(background, (0, 0)) #coloca a imagem de plano de fundo na tela e define sua posiçao
+screen_width = 800  # Largura da tela ou eixo x
+screen_height = 600  # Altura da tela ou eixo y
+screen = pygame.display.set_mode((screen_width, screen_height))  # Cria a tela com o tamanho definido
+pygame.display.set_caption("SpaceX Alpha")  # Define o nome da janela "SpaceX Alpha"
+background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'packground.png')).convert()  # define a imagem de plano de fundo
+screen.blit(background, (0, 0))  # coloca a imagem de plano de fundo na tela e define sua posição
 
 pygame.display.flip()
-
+clock = pygame.time.Clock()
 
 # Define os eventos para criação de inimigos e mísseis
 ADDENEMY = pygame.USEREVENT + 1
@@ -26,14 +26,13 @@ pygame.time.set_timer(ADDENEMY, 250)  # Intervalo de criação de inimigos
 player = Player()
 
 # Define o plano de fundo (cor branca)
-#background = pygame.Surface(screen.get_size())
-#background.fill((0, 0, 0))
+# background = pygame.Surface(screen.get_size())
+# background.fill((0, 0, 0))
+dificuldade = 30
+# Placar
+score = 0
 
-#placar 
-score = 0 
-
-#formataçao para placar
-
+# Formatação para placar
 pygame.font.init()
 font = pygame.font.SysFont(None, 36)
 
@@ -43,60 +42,101 @@ enemies = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 
-running = True
-clock = pygame.time.Clock()
+# Variável de estado do jogo
+game_over = False
 
-while running:
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                running = False
-            elif event.key == K_SPACE:
-                new_missil = bullet(player)
-                missil.add(new_missil)
-                all_sprites.add(new_missil)
-        elif event.type == QUIT:
-            running = False
-        elif event.type == ADDENEMY:  # Criação de um inimigo
-            new_enemy = Enemy()
-            enemies.add(new_enemy)
-            all_sprites.add(new_enemy)
-
-    screen.blit(background, (0, 0)) 
-
-    # Atualiza o jogador e os inimigos 
-    pressed_keys = pygame.key.get_pressed()
-    player.update(pressed_keys, bullet)
-    enemies.update()
-
-
+def check_collisions():
+    global game_over, score
+    #NAO APAGA ESSA LINHA AQUI isso vai dar erro na hitbox caso apagar!!
     
-
-    # Atualiza mísseis e verifica colisões com inimigos
-    missil.update()
-    for missile in missil:
-        enemy_hit = pygame.sprite.spritecollideany(missile, enemies, collided=lambda m, e: m.hitbox.colliderect(e.rect))
+    if pygame.sprite.spritecollideany(player, enemies, collided=lambda p, e: p.hitbox.colliderect(e.rect)):
+        game_over = True
+    # Verifica colisões entre mísseis e inimigos
+    for bullet in missil:
+        enemy_hit = pygame.sprite.spritecollideany(bullet, enemies)
         if enemy_hit:
-            score += 10
+            bullet.kill()
+            enemy_hit.kill()
+            score += 10  # Incrementa o placar quando um inimigo é destruído
 
-            missile.kill()  # Remove o míssil ao atingir um inimigo
-            enemy_hit.kill()  # Remove o inimigo atingido
+def show_game_over_screen():
+    screen.fill((0, 0, 0))  # Preenche a tela com preto
+    game_over_font = pygame.font.SysFont(None, 72)
+    game_over_surf = game_over_font.render('Game Over', True, (255, 0, 0))
+    game_over_rect = game_over_surf.get_rect(center=(screen_width // 2, screen_height // 2 - 50))
+    screen.blit(game_over_surf, game_over_rect)
 
-    # Verifica colisão do jogador com inimigos
-    if pygame.sprite.spritecollideany(player, enemies , collided=lambda p, e: p.hitbox.colliderect(e.rect)):
-        player.kill()
-    
-        
-        
+    score_font = pygame.font.SysFont(None, 48)
+    score_surf = score_font.render(f'Score: {score}', True, (255, 255, 255))
+    score_rect = score_surf.get_rect(center=(screen_width // 2, screen_height // 2 + 50))
+    screen.blit(score_surf, score_rect)
 
+def draw_score():
+    score_surf = font.render(f'Score: {score}', True, (255, 255, 255))
+    score_rect = score_surf.get_rect(topright=(screen_width - 10, 10))
+    screen.blit(score_surf, score_rect)
 
-    # Renderiza todos os sprites
-    for entity in all_sprites:
-        screen.blit(entity.surf, entity.rect)   
-        
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))  # Texto em branco
-    screen.blit(score_text, (10, 10))  # Placar no canto superior esquerdo
+def show_main_menu():
+    screen.fill((0, 0, 0))  # Preenche a tela com preto
+    title_font = pygame.font.SysFont(None, 72)
+    title_surf = title_font.render('SpaceX Alpha', True, (255, 255, 255))
+    title_rect = title_surf.get_rect(center=(screen_width // 2, screen_height // 2 - 50))
+    screen.blit(title_surf, title_rect)
 
+    instruction_font = pygame.font.SysFont(None, 48)
+    instruction_surf = instruction_font.render('Press any key to start', True, (255, 255, 255))
+    instruction_rect = instruction_surf.get_rect(center=(screen_width // 2, screen_height // 2 + 50))
+    screen.blit(instruction_surf, instruction_rect)
 
     pygame.display.flip()
-    clock.tick(60)
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == KEYDOWN:
+                waiting = False
+
+# Chama a função para exibir o menu principal antes de iniciar o jogo
+show_main_menu()
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+        elif event.type == ADDENEMY:
+            new_enemy = Enemy()
+            enemies.add(new_enemy)
+        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            running = False
+        elif event.type == KEYDOWN and event.key == K_SPACE and not game_over:
+            new_bullet = bullet(player)
+            missil.add(new_bullet)
+
+    pressed_keys = pygame.key.get_pressed()
+    if score > 200:
+        dificuldade = 60
+    elif score > 400:
+        dificuldade = 120
+        
+    if not game_over:
+        player.update(pressed_keys, missil)
+        enemies.update()
+        missil.update()
+
+    check_collisions()
+
+    screen.blit(background, (0, 0))
+    for entity in [player] + list(enemies) + list(missil):
+        screen.blit(entity.surf, entity.rect)
+
+    if game_over:
+        show_game_over_screen()
+    else:
+       draw_score()
+
+    pygame.display.flip()
+    clock.tick(dificuldade)
