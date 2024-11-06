@@ -9,7 +9,7 @@ class bullet(pygame.sprite.Sprite):
         # Carrega a imagem do missil
         bullet_image_path = os.path.join(os.path.dirname(__file__), 'bullet.png')
         self.surf = pygame.image.load(bullet_image_path).convert_alpha()  # Usa a imagem
-        self.surf = pygame.transform.rotate(self.surf, 90)  # Rotaciona a imagem
+        #self.surf = pygame.transform.rotate(self.surf, 90)  # Rotaciona a imagem
         self.surf = pygame.transform.scale(self.surf, (40, 40))
 
         # Inicializa a posição do missil de acordo com a posiçao do player
