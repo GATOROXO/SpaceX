@@ -1,3 +1,8 @@
+### Jogo pygame
+### Spacex na Versao Alpha 0.0.6
+### Projeto iniciado por João Paulo A Campos e Gabriel Pivetta Loss
+### Orientador: Ivairton 
+
 import pygame
 from pygame.locals import *
 from bullets import bullet
@@ -28,7 +33,7 @@ player = Player()
 # Define o plano de fundo (cor branca)
 # background = pygame.Surface(screen.get_size())
 # background.fill((0, 0, 0))
-dificuldade = 30
+dificuldade = 45
 # Placar
 score = 0
 
@@ -119,8 +124,19 @@ while running:
     pressed_keys = pygame.key.get_pressed()
     if score > 200:
         dificuldade = 60
+        
+        
     elif score > 400:
         dificuldade = 120
+    elif score > 600:
+        dificuldade = 180
+    elif score > 800:
+        dificuldade = 240
+    elif score > 1000:
+        dificuldade = 300
+    elif score > 1200:
+        dificuldade = 360     
+        
         
     if not game_over:
         player.update(pressed_keys, missil)
