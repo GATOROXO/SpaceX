@@ -12,7 +12,7 @@ class Enemy(pygame.sprite.Sprite):
         self.surf = pygame.image.load(asteroid_image_path).convert_alpha()  # Usa a imagem do asteroide
         
         # Redimensiona a imagem
-        self.surf = pygame.transform.scale(self.surf, (20, 20))
+        self.surf = pygame.transform.scale(self.surf, (50, 50))
 
         # Inicializa a posição do inimigo na extrema direita e sorteia sua posição em relação à coordenada y
         self.rect = self.surf.get_rect(
